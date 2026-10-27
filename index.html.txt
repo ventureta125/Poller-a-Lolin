@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pollería Lolín - Pedidos para Llevar</title>
+    <style>
+        :root {
+            --primary: #d97706;
+            --primary-dark: #b45309;
+            --success: #16a34a;
+            --bg: #f8fafc;
+            --surface: #ffffff;
+            --text: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --radius: 14px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: var(--bg); color: var(--text); padding-bottom: 110px; }
+
+        header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 24px 16px;
+            text-align: center;
+            border-bottom: 4px solid var(--primary);
+        }
+        header h1 { font-size: 1.5rem; margin-bottom: 4px; }
+        header p { font-size: 0.9rem; color: #94a3b8; }
+
+        .container { max-width: 600px; margin: 0 auto; padding: 16px; }
+        .section-title { font-size: 1.15rem; font-weight: 700; margin: 20px 0 12px; color: #0f172a; }
+
+        .product-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .product-info h3 { font-size: 1rem; margin-bottom: 4px; }
+        .product-info p { font-size: 0.85rem; color: var(--text-muted); }
+        .product-price { font-weight: 700; color: var(--primary-dark); margin-top: 6px; font-size: 1.05rem; }
+
+        .counter { display: flex; align-items: center; gap: 12px; }
+        .btn-qty {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid #cbd5e1;
+            background: white;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #334155;
+        }
+        .btn-qty:active { background: #e2e8f0; }
+
+        .order-form {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-top: 24px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        }
+        .input-group { margin-bottom: 14px; }
+        .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+        .input-group input, .input-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            font-size: 1rem;
+            background: #fff;
+        }
+
+        .date-time-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 10px;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .payment-option {
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 10px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            background: #fff;
+            transition: all 0.2s ease;
+        }
+        .payment-option.active {
+            border-color: var(--primary);
+            background: #fffbeb;
+            color: var(--primary-dark);
+        }
+
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border-top: 2px solid var(--border);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            max-width: 600px;
+            margin: 0 auto;
+            z-index: 99999999 !important;
+        }
+        .cart-total { font-size: 1.3rem; font-weight: 800; color: #0f172a; }
+        .btn-checkout {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 14px 22px;
+            border-radius: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+        }
+        .btn-checkout:active { transform: scale(0.97); }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.75);
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            z-index: 100000000;
+        }
+        .modal-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 24px;
+            max-width: 440px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+        }
+        .ticket-number {
+            font-size: 2.3rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            background: #fef3c7;
+            padding: 12px 20px;
+            border-radius: 12px;
+            display: inline-block;
+            margin: 14px 0;
+            border: 2px dashed #f59e0b;
+        }
+        .payment-box {
+            padding: 14px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            margin-top: 14px;
+            text-align: left;
+            line-height: 1.5;
+        }
+        .bizum-box {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+        }
+        .store-pay-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            color: #334155;
+        }
+        .btn-whatsapp-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #25d366;
+            color: white !important;
+            text-decoration: none;
+            padding: 14px 20px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-top: 16px;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+        }
+        .btn-close {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            margin-top: 12px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>🍗 Pollería Lolín</h1>
+        <p>Comidas para llevar · Encargos rápidos sin colas</p>
+    </header>
+
+    <div class="container">
+        <h2 class="section-title">🥘 Carta de Platos del Día</h2>
+        <div id="product-list"></div>
+
+        <div class="order-form">
+            <h3 style="margin-bottom: 12px; font-size: 1.1rem;">📋 Datos de Recogida</h3>
+            <div class="input-group">
+                <label>Tu Nombre:</label>
+                <input type="text" id="cust-name" placeholder="Ej: Pedro Ventura" required>
+            </div>
+            <div class="input-group">
+                <label>Tu Teléfono (Móvil):</label>
+                <input type="tel" id="cust-phone" placeholder="Ej: 646249226" required>
+            </div>
+            
+            <div class="input-group">
+                <label>Día y Hora de Recogida (Semana actual):</label>
+                <div class="date-time-grid">
+                    <div>
+                        <input type="date" id="cust-date" required>
+                    </div>
+                    <div>
+                        <select id="cust-time">
+                            <option value="13:00">13:00 h</option>
+                            <option value="13:30">13:30 h</option>
+                            <option value="14:00" selected>14:00 h</option>
+                            <option value="14:30">14:30 h</option>
+                            <option value="15:00">15:00 h</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Forma de Pago:</label>
+                <div class="payment-options">
+                    <div class="payment-option active" id="opt-bizum" onclick="selectPayment('Bizum')">
+                        📲 Pagar por Bizum
+                    </div>
+                    <div class="payment-option" id="opt-tienda" onclick="selectPayment('En tienda')">
+                        🏪 Pagar en tienda
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="cart-bar">
+        <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">TOTAL:</div>
+            <div class="cart-total" id="cart-total">0,00 €</div>
+        </div>
+        <button class="btn-checkout" onclick="confirmOrder()">Tramitar Pedido</button>
+    </div>
+
+    <!-- Modal Ticket -->
+    <div class="modal" id="ticket-modal">
+        <div class="modal-card">
+            <h2 style="font-size: 1.4rem;">¡Pedido Guardado!</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Enseña este número en caja para retirar sin esperar colas:</p>
+            
+            <div class="ticket-number" id="modal-ticket">#00000</div>
+            
+            <p id="modal-summary" style="font-size: 0.95rem; font-weight: 600; color: #334155; margin-bottom: 10px;"></p>
+
+            <div id="payment-details-box"></div>
+
+            <a id="whatsapp-direct-link" class="btn-whatsapp-link" href="#" target="_top">
+                Confirmar por WhatsApp al Local
+            </a>
+            
+            <button class="btn-close" onclick="closeModal()">Cerrar / Hacer otro pedido</button>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+          { id: 1, name: "Ración Paella Valenciana", desc: "Pollo, conejo y bajoqueta fresca", price: 4.50 },
+          { id: 2, name: "Ración Fideuà de Marisco", desc: "Gambas, sepia y caldo casero", price: 4.50 },
+          { id: 3, name: "Pollo Asado a l'ast", desc: "Entero, dorado con hierbas y jugo", price: 9.00 },
+          { id: 4, name: "Berenjena Rellena de Carne", desc: "Gratinada al horno tradicional", price: 3.50 },
+          { id: 5, name: "Ración Patatas Asadas", desc: "Crujientes con salsa suave", price: 2.50 },
+          { id: 6, name: "Ración Arroz al Horno", desc: "Con costilla, patata y morcilla", price: 4.50 }
+        ];
+
+        let cart = {};
+        let selectedPaymentMethod = "Bizum";
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbw2Mv-ULYKqta3kWALW5rNUXunnyoFihjv7J7J2GQFpI6Mj2ZK73ZtVj6Po7aN7i7ft/exec";
+        const STORE_PHONE = "34646249226";
+
+        function initCurrentWeekDatePicker() {
+          const dateInput = document.getElementById("cust-date");
+          const today = new Date();
+          const formatDate = (d) => {
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, "0");
+            const dd = String(d.getDate()).padStart(2, "0");
+            return `${yyyy}-${mm}-${dd}`;
+          };
+
+          const minDate = formatDate(today);
+          const dayOfWeek = today.getDay();
+          const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+
+          const sunday = new Date(today);
+          sunday.setDate(today.getDate() + daysUntilSunday);
+
+          dateInput.min = minDate;
+          dateInput.max = formatDate(sunday);
+          dateInput.value = minDate;
+        }
+
+        function renderProducts() {
+          const container = document.getElementById("product-list");
+          container.innerHTML = products.map(p => `
+            <div class="product-card">
+              <div class="product-info">
+                <h3>${p.name}</h3>
+                <p>${p.desc}</p>
+                <div class="product-price">${p.price.toFixed(2)} €</div>
+              </div>
+              <div class="counter">
+                <button class="btn-qty" onclick="changeQty(${p.id}, -1)">-</button>
+                <span id="qty-${p.id}" style="font-weight: 800; width: 22px; text-align: center;">0</span>
+                <button class="btn-qty" onclick="changeQty(${p.id}, 1)">+</button>
+              </div>
+            </div>
+          `).join("");
+        }
+
+        function changeQty(id, delta) {
+          cart[id] = Math.max(0, (cart[id] || 0) + delta);
+          document.getElementById(`qty-${id}`).innerText = cart[id];
+          updateTotal();
+        }
+
+        function updateTotal() {
+          let total = 0;
+          Object.keys(cart).forEach(id => {
+            const prod = products.find(p => p.id == id);
+            if (prod) total += cart[id] * prod.price;
+          });
+          document.getElementById("cart-total").innerText = `${total.toFixed(2)} €`;
+          return total;
+        }
+
+        function selectPayment(method) {
+          selectedPaymentMethod = method;
+          document.getElementById("opt-bizum").classList.toggle("active", method === "Bizum");
+          document.getElementById("opt-tienda").classList.toggle("active", method === "En tienda");
+        }
+
+        function resetCart() {
+          cart = {};
+          products.forEach(p => {
+            const qtyElem = document.getElementById(`qty-${p.id}`);
+            if (qtyElem) qtyElem.innerText = "0";
+          });
+          updateTotal();
+        }
+
+        function closeModal() {
+          document.getElementById("ticket-modal").style.display = "none";
+          resetCart();
+        }
+
+        function validSpanishMobile(rawPhone) {
+          const digits = rawPhone.replace(/\D/g, "");
+          return /^[679]\d{8}$/.test(digits);
+        }
+
+        function getTicketId() {
+          const suffix = Math.floor(10 + Math.random() * 90);
+          const stamp = Date.now().toString().slice(-4);
+          return `#${stamp}${suffix}`;
+        }
+
+        function confirmOrder() {
+          const name = document.getElementById("cust-name").value.trim();
+          const rawPhone = document.getElementById("cust-phone").value.trim();
+          const phone = rawPhone.replace(/\D/g, "");
+          const date = document.getElementById("cust-date").value;
+          const time = document.getElementById("cust-time").value;
+          const total = updateTotal();
+
+          if (total === 0) {
+            alert("⚠️ Añade al menos un plato con el botón (+).");
+            return;
+          }
+
+          if (!name || name.length < 2) {
+            alert("⚠️ Introduce tu nombre.");
+            return;
+          }
+
+          if (!validSpanishMobile(rawPhone)) {
+            alert("⚠️ El teléfono debe ser un móvil válido en España (9 dígitos, empezando por 6, 7 o 9).");
+            return;
+          }
+
+          if (!date) {
+            alert("⚠️ Selecciona un día de recogida.");
+            return;
+          }
+
+          const dateParts = date.split("-");
+          const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+          const ticketId = getTicketId();
+
+          document.getElementById("modal-ticket").innerText = ticketId;
+          document.getElementById("modal-summary").innerText = `Recogida: ${formattedDate} (${time} h) · ${total.toFixed(2)} €`;
+
+          let itemsArray = [];
+          let itemsTextWhatsApp = "";
+          Object.keys(cart).forEach(id => {
+            if (cart[id] > 0) {
+              const prod = products.find(p => p.id == id);
+              if (!prod) return;
+              itemsArray.push(`${cart[id]}x ${prod.name}`);
+              itemsTextWhatsApp += `• ${cart[id]}x ${prod.name}\n`;
+            }
+          });
+
+          const payBox = document.getElementById("payment-details-box");
+          if (selectedPaymentMethod === "Bizum") {
+            payBox.className = "payment-box bizum-box";
+            payBox.innerHTML = `
+              <strong>📲 Deja tu pedido pagado por Bizum:</strong><br>
+              1. Envía <strong>${total.toFixed(2)} €</strong> al móvil: <strong>646 24 92 26</strong><br>
+              2. Concepto obligatorio: <strong>Pedido ${ticketId}</strong>
+            `;
+          } else {
+            payBox.className = "payment-box store-pay-box";
+            payBox.innerHTML = `
+              <strong>🏪 Pago en tienda:</strong><br>
+              Pagarás <strong>${total.toFixed(2)} €</strong> directamente en caja al recoger con tu ticket <strong>${ticketId}</strong>.
+            `;
+          }
+
+          const orderData = {
+            ticketId: ticketId,
+            name: name,
+            phone: phone,
+            pickupDate: formattedDate,
+            time: time,
+            paymentMethod: selectedPaymentMethod,
+            items: itemsArray.join(", "),
+            total: `${total.toFixed(2)} €`,
+            status: selectedPaymentMethod === "Bizum" ? "Pendiente Bizum" : "Pago en tienda"
+          };
+
+          fetch(GOOGLE_SHEETS_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(orderData)
+          }).catch(err => console.log("Guardado en hoja:", err));
+
+          let clientIntlPhone = phone;
+          if (!clientIntlPhone.startsWith("34") && clientIntlPhone.length === 9) {
+            clientIntlPhone = "34" + clientIntlPhone;
+          }
+
+          const confirmMsg = `Hola ${name}, confirmamos tu pedido ${ticketId} en Polleria Lolin. Estara listo en cocina para recoger el ${formattedDate} a las ${time}h. Gracias!`;
+          const cleanConfirmUrl = `https://wa.me/${clientIntlPhone}?text=${encodeURIComponent(confirmMsg).replace(/%20/g, "+")}`;
+
+          const rawMsg =
+            `*NUEVO PEDIDO ${ticketId}*\n\n` +
+            `*Cliente:* ${name}\n` +
+            `*Teléfono:* ${phone}\n` +
+            `*Día recogida:* ${formattedDate}\n` +
+            `*Hora recogida:* ${time} h\n` +
+            `*Forma de pago:* ${selectedPaymentMethod}\n\n` +
+            `*Platos:*\n${itemsTextWhatsApp}\n` +
+            `*Total a pagar:* ${total.toFixed(2)} €\n\n` +
+            `━━━━━━━━━━━━━━━\n` +
+            `✅ *Confirmar al cliente en 1 clic:*\n${cleanConfirmUrl}`;
+
+          const whatsappUrl = `https://api.whatsapp.com/send?phone=${STORE_PHONE}&text=${encodeURIComponent(rawMsg)}`;
+          document.getElementById("whatsapp-direct-link").setAttribute("href", whatsappUrl);
+
+          document.getElementById("ticket-modal").style.display = "flex";
+        }
+
+        renderProducts();
+        initCurrentWeekDatePicker();
+    </script>
+</body>
+</html>
