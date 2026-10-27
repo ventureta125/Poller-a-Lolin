@@ -313,7 +313,8 @@
         let cart = {};
         let selectedPaymentMethod = "Bizum";
         
-        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyY_JuhMwe9z_aeQMLGsvJrpNgwivbQCfjLLbucDyoGK_b9rsIMwARHXm3K-JkPgE2p/exec";
+        // Nueva URL definitiva de Google Apps Script integrada
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbw1ldYK2qBV72yf6lLbcludU1-PsHK6aZJMuQhXa7F6HjL9TG-7OMx922n98nuka3D6/exec";
         const STORE_PHONE = "34646249226";
 
         function formatDateYMD(d) {
@@ -323,7 +324,6 @@
           return `${yyyy}-${mm}-${dd}`;
         }
 
-        // 1. Configuración de rango: Hoy hasta +7 días exactos
         function initRollingWeekDatePicker() {
           const dateInput = document.getElementById("cust-date");
           const today = new Date();
@@ -336,7 +336,6 @@
           updateAvailableHours();
         }
 
-        // 2. Horario 12:00 a 15:30 con filtro inteligente para horas pasadas
         function updateAvailableHours() {
           const dateInput = document.getElementById("cust-date");
           const timeSelect = document.getElementById("cust-time");
@@ -348,7 +347,7 @@
           let validHours = [...ALL_HOURS];
 
           if (selectedDate === todayStr) {
-            const currentMinutes = now.getHours() * 60 + now.getMinutes() + 25; // 25 min de margen para cocina
+            const currentMinutes = now.getHours() * 60 + now.getMinutes() + 25;
             validHours = ALL_HOURS.filter(slot => {
               const [h, m] = slot.split(":").map(Number);
               return (h * 60 + m) >= currentMinutes;
@@ -431,7 +430,6 @@
           return /^[679]\d{8}$/.test(digits);
         }
 
-        // 3. Ticket correlativo local diario para la vista del cliente (#01, #02...)
         function getDailyOrderNumber() {
           const todayKey = "lolin_count_" + formatDateYMD(new Date());
           let count = parseInt(localStorage.getItem(todayKey) || "0", 10) + 1;
@@ -503,7 +501,6 @@
             `;
           }
 
-          // Envío a Google Sheets
           const orderData = {
             ticketId: ticketId,
             name: name,
@@ -524,7 +521,6 @@
             body: JSON.stringify(orderData)
           }).catch(err => console.log("Guardado en hoja:", err));
 
-          // Mensaje enviado por WhatsApp al comercio
           let rawMsg =
             `🍗 *NUEVO PEDIDO ${ticketId}*\n\n` +
             `*Cliente:* ${name}\n` +
