@@ -75,7 +75,7 @@
         }
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-        .input-group input, .input-group select {
+        .input-group input, .input-group select, .input-group textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid var(--border);
@@ -83,6 +83,7 @@
             font-size: 1rem;
             background: #fff;
         }
+        .input-group textarea { resize: none; font-family: inherit; }
 
         .date-time-grid {
             display: grid;
@@ -163,7 +164,7 @@
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
         }
         .ticket-number {
-            font-size: 2.3rem;
+            font-size: 2.1rem;
             font-weight: 900;
             color: var(--primary-dark);
             background: #fef3c7;
@@ -240,21 +241,20 @@
             </div>
             
             <div class="input-group">
-                <label>Día y Hora de Recogida (Semana actual):</label>
+                <label>Día y Hora de Recogida (Máximo 7 días):</label>
                 <div class="date-time-grid">
                     <div>
-                        <input type="date" id="cust-date" required>
+                        <input type="date" id="cust-date" onchange="updateAvailableHours()" required>
                     </div>
                     <div>
-                        <select id="cust-time">
-                            <option value="13:00">13:00 h</option>
-                            <option value="13:30">13:30 h</option>
-                            <option value="14:00" selected>14:00 h</option>
-                            <option value="14:30">14:30 h</option>
-                            <option value="15:00">15:00 h</option>
-                        </select>
+                        <select id="cust-time"></select>
                     </div>
                 </div>
+            </div>
+
+            <div class="input-group">
+                <label>Observaciones / Alergias (Opcional):</label>
+                <textarea id="cust-notes" rows="2" placeholder="Ej: Pollo bien tostado / Sin cebolla"></textarea>
             </div>
 
             <div class="input-group">
@@ -285,7 +285,7 @@
             <h2 style="font-size: 1.4rem;">¡Pedido Guardado!</h2>
             <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Enseña este número en caja para retirar sin esperar colas:</p>
             
-            <div class="ticket-number" id="modal-ticket">#00000</div>
+            <div class="ticket-number" id="modal-ticket">#01</div>
             
             <p id="modal-summary" style="font-size: 0.95rem; font-weight: 600; color: #334155; margin-bottom: 10px;"></p>
 
@@ -309,33 +309,65 @@
           { id: 6, name: "Ración Arroz al Horno", desc: "Con costilla, patata y morcilla", price: 4.50 }
         ];
 
+        const ALL_HOURS = ["12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30"];
         let cart = {};
         let selectedPaymentMethod = "Bizum";
         
-        // Tu nueva URL de Google Apps Script configurada
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbyY_JuhMwe9z_aeQMLGsvJrpNgwivbQCfjLLbucDyoGK_b9rsIMwARHXm3K-JkPgE2p/exec";
         const STORE_PHONE = "34646249226";
 
-        function initCurrentWeekDatePicker() {
+        function formatDateYMD(d) {
+          const yyyy = d.getFullYear();
+          const mm = String(d.getMonth() + 1).padStart(2, "0");
+          const dd = String(d.getDate()).padStart(2, "0");
+          return `${yyyy}-${mm}-${dd}`;
+        }
+
+        // 1. Configuración de rango: Hoy hasta +7 días exactos
+        function initRollingWeekDatePicker() {
           const dateInput = document.getElementById("cust-date");
           const today = new Date();
-          const formatDate = (d) => {
-            const yyyy = d.getFullYear();
-            const mm = String(d.getMonth() + 1).padStart(2, "0");
-            const dd = String(d.getDate()).padStart(2, "0");
-            return `${yyyy}-${mm}-${dd}`;
-          };
+          const nextWeek = new Date(today);
+          nextWeek.setDate(today.getDate() + 7);
 
-          const minDate = formatDate(today);
-          const dayOfWeek = today.getDay();
-          const daysUntilSunday = dayOfWeek === 0 ? 0 : 7 - dayOfWeek;
+          dateInput.min = formatDateYMD(today);
+          dateInput.max = formatDateYMD(nextWeek);
+          dateInput.value = formatDateYMD(today);
+          updateAvailableHours();
+        }
 
-          const sunday = new Date(today);
-          sunday.setDate(today.getDate() + daysUntilSunday);
+        // 2. Horario 12:00 a 15:30 con filtro inteligente para horas pasadas
+        function updateAvailableHours() {
+          const dateInput = document.getElementById("cust-date");
+          const timeSelect = document.getElementById("cust-time");
+          const selectedDate = dateInput.value;
+          const now = new Date();
+          const todayStr = formatDateYMD(now);
 
-          dateInput.min = minDate;
-          dateInput.max = formatDate(sunday);
-          dateInput.value = minDate;
+          timeSelect.innerHTML = "";
+          let validHours = [...ALL_HOURS];
+
+          if (selectedDate === todayStr) {
+            const currentMinutes = now.getHours() * 60 + now.getMinutes() + 25; // 25 min de margen para cocina
+            validHours = ALL_HOURS.filter(slot => {
+              const [h, m] = slot.split(":").map(Number);
+              return (h * 60 + m) >= currentMinutes;
+            });
+          }
+
+          if (validHours.length === 0) {
+            const opt = document.createElement("option");
+            opt.value = "";
+            opt.textContent = "Sin horas hoy (cerrado)";
+            timeSelect.appendChild(opt);
+          } else {
+            validHours.forEach(slot => {
+              const opt = document.createElement("option");
+              opt.value = slot;
+              opt.textContent = `${slot} h`;
+              timeSelect.appendChild(opt);
+            });
+          }
         }
 
         function renderProducts() {
@@ -384,6 +416,8 @@
             const qtyElem = document.getElementById(`qty-${p.id}`);
             if (qtyElem) qtyElem.innerText = "0";
           });
+          const notesElem = document.getElementById("cust-notes");
+          if (notesElem) notesElem.value = "";
           updateTotal();
         }
 
@@ -397,10 +431,12 @@
           return /^[679]\d{8}$/.test(digits);
         }
 
-        function getTicketId() {
-          const suffix = Math.floor(10 + Math.random() * 90);
-          const stamp = Date.now().toString().slice(-4);
-          return `#${stamp}${suffix}`;
+        // 3. Ticket correlativo local diario para la vista del cliente (#01, #02...)
+        function getDailyOrderNumber() {
+          const todayKey = "lolin_count_" + formatDateYMD(new Date());
+          let count = parseInt(localStorage.getItem(todayKey) || "0", 10) + 1;
+          localStorage.setItem(todayKey, count);
+          return "#" + String(count).padStart(2, "0");
         }
 
         function confirmOrder() {
@@ -409,31 +445,33 @@
           const phone = rawPhone.replace(/\D/g, "");
           const date = document.getElementById("cust-date").value;
           const time = document.getElementById("cust-time").value;
+          const notes = document.getElementById("cust-notes").value.trim();
           const total = updateTotal();
 
           if (total === 0) {
             alert("⚠️ Añade al menos un plato con el botón (+).");
             return;
           }
-
           if (!name || name.length < 2) {
             alert("⚠️ Introduce tu nombre.");
             return;
           }
-
           if (!validSpanishMobile(rawPhone)) {
-            alert("⚠️ El teléfono debe ser un móvil válido en España (9 dígitos, empezando por 6, 7 o 9).");
+            alert("⚠️ Introduce un número de móvil válido en España (9 dígitos).");
             return;
           }
-
           if (!date) {
             alert("⚠️ Selecciona un día de recogida.");
+            return;
+          }
+          if (!time) {
+            alert("⚠️ Por favor, selecciona una hora válida de recogida.");
             return;
           }
 
           const dateParts = date.split("-");
           const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-          const ticketId = getTicketId();
+          const ticketId = getDailyOrderNumber();
 
           document.getElementById("modal-ticket").innerText = ticketId;
           document.getElementById("modal-summary").innerText = `Recogida: ${formattedDate} (${time} h) · ${total.toFixed(2)} €`;
@@ -461,11 +499,11 @@
             payBox.className = "payment-box store-pay-box";
             payBox.innerHTML = `
               <strong>🏪 Pago en tienda:</strong><br>
-              Pagarás <strong>${total.toFixed(2)} €</strong> directamente en caja al recoger con tu ticket <strong>${ticketId}</strong>.
+              Pagarás <strong>${total.toFixed(2)} €</strong> en caja al recoger con tu ticket <strong>${ticketId}</strong>.
             `;
           }
 
-          // Guardado en la base de datos Google Sheets
+          // Envío a Google Sheets
           const orderData = {
             ticketId: ticketId,
             name: name,
@@ -475,6 +513,7 @@
             paymentMethod: selectedPaymentMethod,
             items: itemsArray.join(", "),
             total: `${total.toFixed(2)} €`,
+            notes: notes || "Sin observaciones",
             status: selectedPaymentMethod === "Bizum" ? "Pendiente Bizum" : "Pago en tienda"
           };
 
@@ -485,17 +524,22 @@
             body: JSON.stringify(orderData)
           }).catch(err => console.log("Guardado en hoja:", err));
 
-          // Mensaje enviado al WhatsApp del negocio
-          const rawMsg =
+          // Mensaje enviado por WhatsApp al comercio
+          let rawMsg =
             `🍗 *NUEVO PEDIDO ${ticketId}*\n\n` +
             `*Cliente:* ${name}\n` +
             `*Teléfono:* ${phone}\n` +
             `*Día recogida:* ${formattedDate}\n` +
             `*Hora recogida:* ${time} h\n` +
             `*Forma de pago:* ${selectedPaymentMethod}\n\n` +
-            `*Platos:*\n${itemsTextWhatsApp}\n` +
-            `*Total a pagar:* ${total.toFixed(2)} €\n\n` +
-            `_Por favor, confirmadme disponibilidad cuando podáis. ¡Muchas gracias!_`;
+            `*Platos:*\n${itemsTextWhatsApp}`;
+
+          if (notes) {
+            rawMsg += `\n*Nota del cliente:* _${notes}_\n`;
+          }
+
+          rawMsg += `\n*Total a pagar:* ${total.toFixed(2)} €\n\n` +
+                    `_Por favor, confirmadme disponibilidad cuando podáis. ¡Muchas gracias!_`;
 
           const whatsappUrl = `https://api.whatsapp.com/send?phone=${STORE_PHONE}&text=${encodeURIComponent(rawMsg)}`;
           document.getElementById("whatsapp-direct-link").setAttribute("href", whatsappUrl);
@@ -504,7 +548,7 @@
         }
 
         renderProducts();
-        initCurrentWeekDatePicker();
+        initRollingWeekDatePicker();
     </script>
 </body>
 </html>
