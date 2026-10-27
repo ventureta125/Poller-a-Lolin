@@ -311,7 +311,9 @@
 
         let cart = {};
         let selectedPaymentMethod = "Bizum";
-        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbw2Mv-ULYKqta3kWALW5rNUXunnyoFihjv7J7J2GQFpI6Mj2ZK73ZtVj6Po7aN7i7ft/exec";
+        
+        // URL de tu nueva implementación en Apps Script
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbw0H2VmQaFldtx0vIB8Y_0PYbYETZhBrvpV7m9JaUvAn5ISv_xkQymOXGS-CghjISLz/exec";
         const STORE_PHONE = "34646249226";
 
         function initCurrentWeekDatePicker() {
@@ -463,7 +465,7 @@
             `;
           }
 
-          // Guardado silencioso en la base de datos Google Sheets
+          // Guardado silencioso en la base de datos Google Sheets con la confirmación de 1 clic
           const orderData = {
             ticketId: ticketId,
             name: name,
@@ -483,7 +485,7 @@
             body: JSON.stringify(orderData)
           }).catch(err => console.log("Guardado en hoja:", err));
 
-          // Mensaje limpio y natural enviado por el cliente
+          // Mensaje limpio y sin enlaces que envía el cliente
           const rawMsg =
             `🍗 *NUEVO PEDIDO ${ticketId}*\n\n` +
             `*Cliente:* ${name}\n` +
@@ -506,4 +508,3 @@
     </script>
 </body>
 </html>
-
