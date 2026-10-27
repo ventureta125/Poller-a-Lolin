@@ -232,7 +232,7 @@
             <h3 style="margin-bottom: 12px; font-size: 1.1rem;">📋 Datos de Recogida</h3>
             <div class="input-group">
                 <label>Tu Nombre:</label>
-                <input type="text" id="cust-name" placeholder="Ej: Pedro Ventura" required>
+                <input type="text" id="cust-name" placeholder="Ej: Paula Carda" required>
             </div>
             <div class="input-group">
                 <label>Tu Teléfono (Móvil):</label>
@@ -292,7 +292,7 @@
             <div id="payment-details-box"></div>
 
             <a id="whatsapp-direct-link" class="btn-whatsapp-link" href="#" target="_top">
-                Confirmar por WhatsApp al Local
+                Enviar comanda por WhatsApp al Local
             </a>
             
             <button class="btn-close" onclick="closeModal()">Cerrar / Hacer otro pedido</button>
@@ -463,6 +463,7 @@
             `;
           }
 
+          // Guardado silencioso en la base de datos Google Sheets
           const orderData = {
             ticketId: ticketId,
             name: name,
@@ -482,16 +483,9 @@
             body: JSON.stringify(orderData)
           }).catch(err => console.log("Guardado en hoja:", err));
 
-          let clientIntlPhone = phone;
-          if (!clientIntlPhone.startsWith("34") && clientIntlPhone.length === 9) {
-            clientIntlPhone = "34" + clientIntlPhone;
-          }
-
-          const confirmMsg = `Hola ${name}, confirmamos tu pedido ${ticketId} en Polleria Lolin. Estara listo en cocina para recoger el ${formattedDate} a las ${time}h. Gracias!`;
-          const cleanConfirmUrl = `https://wa.me/${clientIntlPhone}?text=${encodeURIComponent(confirmMsg).replace(/%20/g, "+")}`;
-
+          // Mensaje limpio y natural enviado por el cliente
           const rawMsg =
-            `*NUEVO PEDIDO ${ticketId}*\n\n` +
+            `🍗 *NUEVO PEDIDO ${ticketId}*\n\n` +
             `*Cliente:* ${name}\n` +
             `*Teléfono:* ${phone}\n` +
             `*Día recogida:* ${formattedDate}\n` +
@@ -499,8 +493,7 @@
             `*Forma de pago:* ${selectedPaymentMethod}\n\n` +
             `*Platos:*\n${itemsTextWhatsApp}\n` +
             `*Total a pagar:* ${total.toFixed(2)} €\n\n` +
-            `━━━━━━━━━━━━━━━\n` +
-            `✅ *Confirmar al cliente en 1 clic:*\n${cleanConfirmUrl}`;
+            `_Por favor, confirmadme disponibilidad cuando podáis. ¡Muchas gracias!_`;
 
           const whatsappUrl = `https://api.whatsapp.com/send?phone=${STORE_PHONE}&text=${encodeURIComponent(rawMsg)}`;
           document.getElementById("whatsapp-direct-link").setAttribute("href", whatsappUrl);
@@ -513,3 +506,4 @@
     </script>
 </body>
 </html>
+
