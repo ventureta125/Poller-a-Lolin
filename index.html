@@ -2,28 +2,28 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pollería Lolín - Pedidos para Llevar</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pollería Lolín - Pedidos Online</title>
     <style>
         :root {
             --primary: #d97706;
             --primary-dark: #b45309;
-            --success: #16a34a;
             --bg: #f8fafc;
             --surface: #ffffff;
-            --text: #0f172a;
+            --text: #1e293b;
             --text-muted: #64748b;
             --border: #e2e8f0;
-            --radius: 14px;
+            --radius: 12px;
+            --danger: #b91c1c;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         body { background: var(--bg); color: var(--text); padding-bottom: 110px; }
 
         header {
             background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
             color: white;
-            padding: 24px 16px;
+            padding: 22px 16px;
             text-align: center;
             border-bottom: 4px solid var(--primary);
         }
@@ -31,37 +31,37 @@
         header p { font-size: 0.9rem; color: #94a3b8; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 16px; }
-        .section-title { font-size: 1.15rem; font-weight: 700; margin: 20px 0 12px; color: #0f172a; }
+
+        .section-title { font-size: 1.1rem; font-weight: 700; margin: 20px 0 12px; color: #0f172a; }
 
         .product-card {
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 14px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
         .product-info h3 { font-size: 1rem; margin-bottom: 4px; }
         .product-info p { font-size: 0.85rem; color: var(--text-muted); }
-        .product-price { font-weight: 700; color: var(--primary-dark); margin-top: 6px; font-size: 1.05rem; }
+        .product-price { font-weight: 700; color: var(--primary-dark); margin-top: 4px; }
 
-        .counter { display: flex; align-items: center; gap: 12px; }
+        .counter { display: flex; align-items: center; gap: 10px; }
         .btn-qty {
-            width: 38px;
-            height: 38px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
-            border: 1px solid #cbd5e1;
+            border: 1px solid var(--border);
             background: white;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: bold;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #334155;
         }
         .btn-qty:active { background: #e2e8f0; }
 
@@ -70,48 +70,59 @@
             border: 1px solid var(--border);
             border-radius: var(--radius);
             padding: 16px;
-            margin-top: 24px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+            margin-top: 20px;
         }
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
         .input-group input, .input-group select, .input-group textarea {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             border: 1px solid var(--border);
-            border-radius: 10px;
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.95rem;
             background: #fff;
         }
-        .input-group textarea { resize: none; font-family: inherit; }
 
-        .date-time-grid {
-            display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            gap: 10px;
-        }
-
-        .payment-options {
+        .option-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 10px;
-            margin-top: 6px;
         }
-        .payment-option {
-            border: 2px solid var(--border);
-            border-radius: 10px;
-            padding: 12px 10px;
+        .btn-toggle {
+            padding: 10px;
             text-align: center;
-            cursor: pointer;
-            font-size: 0.9rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: #f8fafc;
             font-weight: 600;
-            background: #fff;
-            transition: all 0.2s ease;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .payment-option.active {
+        .btn-toggle.active {
             border-color: var(--primary);
             background: #fffbeb;
             color: var(--primary-dark);
+        }
+
+        #delivery-fields {
+            display: none;
+            background: #fff7ed;
+            border: 1px dashed var(--primary);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .policy-banner {
+            background: #fef2f2;
+            border-left: 4px solid var(--danger);
+            padding: 10px 12px;
+            font-size: 0.85rem;
+            color: #991b1b;
+            border-radius: 4px;
+            margin-top: 14px;
+            line-height: 1.35;
         }
 
         .cart-bar {
@@ -119,102 +130,111 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: #ffffff;
-            border-top: 2px solid var(--border);
+            background: white;
+            border-top: 1px solid var(--border);
             padding: 12px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
             max-width: 600px;
             margin: 0 auto;
-            z-index: 99999999 !important;
+            z-index: 50;
         }
-        .cart-total { font-size: 1.3rem; font-weight: 800; color: #0f172a; }
+        .cart-total { font-size: 1.2rem; font-weight: 800; color: #0f172a; }
         .btn-checkout {
-            background: var(--success);
+            background: var(--primary);
             color: white;
             border: none;
-            padding: 14px 22px;
-            border-radius: 10px;
+            padding: 12px 20px;
+            border-radius: 8px;
             font-weight: 700;
             cursor: pointer;
             font-size: 1rem;
-            box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
         }
-        .btn-checkout:active { transform: scale(0.97); }
 
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(0,0,0,0.65);
             align-items: center;
             justify-content: center;
             padding: 16px;
-            z-index: 100000000;
+            z-index: 100;
         }
         .modal-card {
             background: white;
             border-radius: var(--radius);
-            padding: 24px;
-            max-width: 440px;
+            padding: 20px;
+            max-width: 480px;
             width: 100%;
             text-align: center;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        .ticket-number {
-            font-size: 2.1rem;
-            font-weight: 900;
+        .ticket-badge {
+            font-size: 2rem;
+            font-weight: 800;
             color: var(--primary-dark);
             background: #fef3c7;
-            padding: 12px 20px;
-            border-radius: 12px;
+            padding: 8px 18px;
+            border-radius: 8px;
             display: inline-block;
-            margin: 14px 0;
-            border: 2px dashed #f59e0b;
+            margin: 12px 0;
         }
         .payment-box {
-            padding: 14px;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            margin-top: 14px;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            margin: 12px 0;
             text-align: left;
-            line-height: 1.5;
         }
-        .bizum-box {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
-            color: #166534;
+        .bizum-box { background: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
+        .store-pay-box { background: #f8fafc; border: 1px solid #cbd5e1; color: #334155; }
+
+        .cancellation-alert {
+            background: #fff1f2;
+            border: 1px solid #fecdd3;
+            border-radius: 8px;
+            padding: 10px;
+            font-size: 0.85rem;
+            color: #9f1239;
+            text-align: left;
+            margin: 10px 0;
         }
-        .store-pay-box {
-            background: #f8fafc;
-            border: 1px solid #cbd5e1;
-            color: #334155;
-        }
-        .btn-whatsapp-link {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #25d366;
-            color: white !important;
+        .btn-call {
+            display: block;
+            background: #e11d48;
+            color: white;
             text-decoration: none;
-            padding: 14px 20px;
-            border-radius: 10px;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-top: 6px;
+            text-align: center;
+        }
+
+        .btn-whatsapp-link {
+            display: block;
+            background: #25d366;
+            color: white;
+            text-decoration: none;
+            padding: 14px;
+            border-radius: 8px;
             font-weight: 700;
             font-size: 1rem;
-            margin-top: 16px;
-            width: 100%;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            margin-top: 12px;
         }
         .btn-close {
-            background: transparent;
+            background: none;
             border: none;
-            color: #64748b;
-            margin-top: 12px;
+            color: var(--text-muted);
+            margin-top: 10px;
             cursor: pointer;
             font-size: 0.9rem;
-            text-decoration: underline;
         }
     </style>
 </head>
@@ -222,329 +242,349 @@
 
     <header>
         <h1>🍗 Pollería Lolín</h1>
-        <p>Comidas para llevar · Encargos rápidos sin colas</p>
+        <p>Encargos online rápidos · Recogida y Domicilio</p>
     </header>
 
     <div class="container">
-        <h2 class="section-title">🥘 Carta de Platos del Día</h2>
+        <h2 class="section-title">🥘 Carta de Platos</h2>
         <div id="product-list"></div>
 
         <div class="order-form">
-            <h3 style="margin-bottom: 12px; font-size: 1.1rem;">📋 Datos de Recogida</h3>
+            <h3 style="margin-bottom: 12px; font-size: 1.1rem;">📋 Opciones del Pedido</h3>
+
+            <!-- Selector Servicio -->
             <div class="input-group">
-                <label>Tu Nombre:</label>
-                <input type="text" id="cust-name" placeholder="Ej: Paula Carda" required>
-            </div>
-            <div class="input-group">
-                <label>Tu Teléfono (Móvil):</label>
-                <input type="tel" id="cust-phone" placeholder="Ej: 646249226" required>
-            </div>
-            
-            <div class="input-group">
-                <label>Día y Hora de Recogida (Máximo 7 días):</label>
-                <div class="date-time-grid">
-                    <div>
-                        <input type="date" id="cust-date" onchange="updateAvailableHours()" required>
-                    </div>
-                    <div>
-                        <select id="cust-time"></select>
-                    </div>
+                <label>Modalidad de Entrega:</label>
+                <div class="option-grid">
+                    <div class="btn-toggle active" id="btn-mode-pickup" onclick="setServiceMode('pickup')">🏪 Recoger en Tienda</div>
+                    <div class="btn-toggle" id="btn-mode-delivery" onclick="setServiceMode('delivery')">🛵 Envío a Domicilio</div>
                 </div>
             </div>
 
+            <!-- Campos Dirección (si es a domicilio) -->
+            <div id="delivery-fields">
+                <div class="input-group">
+                    <label>Dirección completa de entrega:</label>
+                    <input type="text" id="cust-address" placeholder="Calle, número, piso y puerta">
+                </div>
+                <div class="input-group" style="margin-bottom: 0;">
+                    <label>Indicaciones para el repartidor (opcional):</label>
+                    <input type="text" id="cust-delivery-notes" placeholder="Ej: Timbre roto, llamar al móvil">
+                </div>
+            </div>
+
+            <div class="input-group" style="margin-top: 12px;">
+                <label>Tu Nombre y Apellidos:</label>
+                <input type="text" id="cust-name" placeholder="Ej: Carlos Gómez" required>
+            </div>
+
             <div class="input-group">
-                <label>Observaciones / Alergias (Opcional):</label>
-                <textarea id="cust-notes" rows="2" placeholder="Ej: Pollo bien tostado / Sin cebolla"></textarea>
+                <label>Tu Teléfono Móvil:</label>
+                <input type="tel" id="cust-phone" placeholder="Ej: 646249226" required>
+            </div>
+
+            <div class="option-grid">
+                <div class="input-group">
+                    <label>Día:</label>
+                    <input type="date" id="cust-date" required>
+                </div>
+                <div class="input-group">
+                    <label>Hora deseada:</label>
+                    <select id="cust-time"></select>
+                </div>
             </div>
 
             <div class="input-group">
                 <label>Forma de Pago:</label>
-                <div class="payment-options">
-                    <div class="payment-option active" id="opt-bizum" onclick="selectPayment('Bizum')">
-                        📲 Pagar por Bizum
-                    </div>
-                    <div class="payment-option" id="opt-tienda" onclick="selectPayment('En tienda')">
-                        🏪 Pagar en tienda
-                    </div>
+                <div class="option-grid">
+                    <div class="btn-toggle active" id="btn-pay-bizum" onclick="setPaymentMethod('Bizum')">📲 Pagar con Bizum</div>
+                    <div class="btn-toggle" id="btn-pay-store" onclick="setPaymentMethod('En tienda')">💵 Al recibir / Tienda</div>
                 </div>
+            </div>
+
+            <div class="input-group">
+                <label>Observaciones / Alergias:</label>
+                <input type="text" id="cust-notes" placeholder="Ej: Pollo bien tostado / Sin cebolla">
+            </div>
+
+            <div class="policy-banner">
+                <strong>Políticas de cancelación:</strong> Para cambios o anulaciones de pedidos, se debe llamar obligatoriamente al local por teléfono con un mínimo de <strong>45 minutos de antelación</strong>. No se gestionan cancelaciones por WhatsApp durante el servicio.
             </div>
         </div>
     </div>
 
     <div class="cart-bar">
         <div>
-            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">TOTAL:</div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">TOTAL ESTIMADO:</div>
             <div class="cart-total" id="cart-total">0,00 €</div>
         </div>
         <button class="btn-checkout" onclick="confirmOrder()">Tramitar Pedido</button>
     </div>
 
-    <!-- Modal Ticket -->
+    <!-- Modal Resumen -->
     <div class="modal" id="ticket-modal">
         <div class="modal-card">
-            <h2 style="font-size: 1.4rem;">¡Pedido Guardado!</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Enseña este número en caja para retirar sin esperar colas:</p>
+            <h2>¡Pedido Preparado!</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Tu comanda ha quedado registrada con el código:</p>
             
-            <div class="ticket-number" id="modal-ticket">#01</div>
+            <div class="ticket-badge" id="modal-ticket">#01</div>
             
-            <p id="modal-summary" style="font-size: 0.95rem; font-weight: 600; color: #334155; margin-bottom: 10px;"></p>
+            <p id="modal-summary" style="font-size: 0.95rem; font-weight: 600; color: #334155; margin-bottom: 8px;"></p>
+            <p id="modal-address-info" style="font-size: 0.85rem; color: #64748b; margin-bottom: 8px;"></p>
 
             <div id="payment-details-box"></div>
 
+            <div class="cancellation-alert">
+                <strong>¿Necesitas cancelar o cambiar algo?</strong><br>
+                Debes llamar directamente al local con al menos <strong>45 minutos de antelación</strong>.
+                <a class="btn-call" href="tel:34646249226">📞 Llamar al 646 24 92 26 para cancelar</a>
+            </div>
+
             <a id="whatsapp-direct-link" class="btn-whatsapp-link" href="#" target="_top">
-                Enviar comanda por WhatsApp al Local
+                Enviar Comanda por WhatsApp
             </a>
             
-            <button class="btn-close" onclick="closeModal()">Cerrar / Hacer otro pedido</button>
+            <button class="btn-close" onclick="closeModal()">Modificar o Cerrar</button>
         </div>
     </div>
 
     <script>
         const products = [
-          { id: 1, name: "Ración Paella Valenciana", desc: "Pollo, conejo y bajoqueta fresca", price: 4.50 },
-          { id: 2, name: "Ración Fideuà de Marisco", desc: "Gambas, sepia y caldo casero", price: 4.50 },
-          { id: 3, name: "Pollo Asado a l'ast", desc: "Entero, dorado con hierbas y jugo", price: 9.00 },
-          { id: 4, name: "Berenjena Rellena de Carne", desc: "Gratinada al horno tradicional", price: 3.50 },
-          { id: 5, name: "Ración Patatas Asadas", desc: "Crujientes con salsa suave", price: 2.50 },
-          { id: 6, name: "Ración Arroz al Horno", desc: "Con costilla, patata y morcilla", price: 4.50 }
+            { id: 1, name: "Ración Paella Valenciana", desc: "Pollo, conejo y bajoqueta fresca", price: 4.50 },
+            { id: 2, name: "Ración Fideuà de Marisco", desc: "Gambas, sepia y caldo casero", price: 4.50 },
+            { id: 3, name: "Pollo Asado a l'ast", desc: "Entero, dorado con hierbas y jugo", price: 9.00 },
+            { id: 4, name: "Berenjena Rellena de Carne", desc: "Gratinada al horno tradicional", price: 3.50 },
+            { id: 5, name: "Ración Patatas Asadas", desc: "Crujientes con salsa suave", price: 2.50 },
+            { id: 6, name: "Ración Arroz al Horno", desc: "Con costilla, patata y morcilla", price: 4.50 }
         ];
 
         const ALL_HOURS = ["12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30"];
         let cart = {};
-        let selectedPaymentMethod = "Bizum";
-        
-        // URL de tu nueva implementación en Apps Script
+        let serviceMode = "pickup";
+        let paymentMethod = "Bizum";
+
+        // URL actualizada de Google Apps Script
         const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz3IFZcBQ5tY9sKbCvaGATbiSyVvzgVk7_PFnaJvQUshmB4vUdl6K8Qy03hUNNsyOvH/exec";
         const STORE_PHONE = "34646249226";
 
-        function formatDateYMD(d) {
-          const yyyy = d.getFullYear();
-          const mm = String(d.getMonth() + 1).padStart(2, "0");
-          const dd = String(d.getDate()).padStart(2, "0");
-          return `${yyyy}-${mm}-${dd}`;
+        function setServiceMode(mode) {
+            serviceMode = mode;
+            document.getElementById("btn-mode-pickup").classList.toggle("active", mode === 'pickup');
+            document.getElementById("btn-mode-delivery").classList.toggle("active", mode === 'delivery');
+            document.getElementById("delivery-fields").style.display = mode === 'delivery' ? 'block' : 'none';
+            updateTotal();
         }
 
-        function initRollingWeekDatePicker() {
-          const dateInput = document.getElementById("cust-date");
-          const today = new Date();
-          const nextWeek = new Date(today);
-          nextWeek.setDate(today.getDate() + 7);
+        function setPaymentMethod(method) {
+            paymentMethod = method;
+            document.getElementById("btn-pay-bizum").classList.toggle("active", method === 'Bizum');
+            document.getElementById("btn-pay-store").classList.toggle("active", method === 'En tienda');
+        }
 
-          dateInput.min = formatDateYMD(today);
-          dateInput.max = formatDateYMD(nextWeek);
-          dateInput.value = formatDateYMD(today);
-          updateAvailableHours();
+        function initDatePicker() {
+            const dateInput = document.getElementById("cust-date");
+            const today = new Date();
+            const formatDate = (d) => {
+                const y = d.getFullYear();
+                const m = String(d.getMonth() + 1).padStart(2, "0");
+                const day = String(d.getDate()).padStart(2, "0");
+                return `${y}-${m}-${day}`;
+            };
+
+            const minDate = formatDate(today);
+            const maxDateObj = new Date(today);
+            maxDateObj.setDate(today.getDate() + 7);
+
+            dateInput.min = minDate;
+            dateInput.max = formatDate(maxDateObj);
+            dateInput.value = minDate;
+
+            dateInput.addEventListener("change", updateAvailableHours);
+            updateAvailableHours();
         }
 
         function updateAvailableHours() {
-          const dateInput = document.getElementById("cust-date");
-          const timeSelect = document.getElementById("cust-time");
-          const selectedDate = dateInput.value;
-          const now = new Date();
-          const todayStr = formatDateYMD(now);
+            const selectTime = document.getElementById("cust-time");
+            const selectedDate = document.getElementById("cust-date").value;
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-          timeSelect.innerHTML = "";
-          let validHours = [...ALL_HOURS];
+            selectTime.innerHTML = "";
+            let available = ALL_HOURS;
 
-          if (selectedDate === todayStr) {
-            const currentMinutes = now.getHours() * 60 + now.getMinutes() + 25;
-            validHours = ALL_HOURS.filter(slot => {
-              const [h, m] = slot.split(":").map(Number);
-              return (h * 60 + m) >= currentMinutes;
-            });
-          }
+            if (selectedDate === todayStr) {
+                const currentMinutes = now.getHours() * 60 + now.getMinutes() + 30;
+                available = ALL_HOURS.filter(h => {
+                    const [hour, min] = h.split(":").map(Number);
+                    return (hour * 60 + min) >= currentMinutes;
+                });
+            }
 
-          if (validHours.length === 0) {
-            const opt = document.createElement("option");
-            opt.value = "";
-            opt.textContent = "Sin horas hoy (cerrado)";
-            timeSelect.appendChild(opt);
-          } else {
-            validHours.forEach(slot => {
-              const opt = document.createElement("option");
-              opt.value = slot;
-              opt.textContent = `${slot} h`;
-              timeSelect.appendChild(opt);
-            });
-          }
+            if (available.length === 0) {
+                selectTime.innerHTML = `<option value="">No hay horas hoy</option>`;
+            } else {
+                available.forEach(h => {
+                    const opt = document.createElement("option");
+                    opt.value = h;
+                    opt.textContent = `${h} h`;
+                    selectTime.appendChild(opt);
+                });
+            }
         }
 
         function renderProducts() {
-          const container = document.getElementById("product-list");
-          container.innerHTML = products.map(p => `
-            <div class="product-card">
-              <div class="product-info">
-                <h3>${p.name}</h3>
-                <p>${p.desc}</p>
-                <div class="product-price">${p.price.toFixed(2)} €</div>
-              </div>
-              <div class="counter">
-                <button class="btn-qty" onclick="changeQty(${p.id}, -1)">-</button>
-                <span id="qty-${p.id}" style="font-weight: 800; width: 22px; text-align: center;">0</span>
-                <button class="btn-qty" onclick="changeQty(${p.id}, 1)">+</button>
-              </div>
-            </div>
-          `).join("");
+            const container = document.getElementById("product-list");
+            container.innerHTML = products.map(p => `
+                <div class="product-card">
+                    <div class="product-info">
+                        <h3>${p.name}</h3>
+                        <p>${p.desc}</p>
+                        <div class="product-price">${p.price.toFixed(2)} €</div>
+                    </div>
+                    <div class="counter">
+                        <button class="btn-qty" onclick="changeQty(${p.id}, -1)">-</button>
+                        <span id="qty-${p.id}" style="font-weight: 800; width: 22px; text-align: center;">0</span>
+                        <button class="btn-qty" onclick="changeQty(${p.id}, 1)">+</button>
+                    </div>
+                </div>
+            `).join("");
         }
 
         function changeQty(id, delta) {
-          cart[id] = Math.max(0, (cart[id] || 0) + delta);
-          document.getElementById(`qty-${id}`).innerText = cart[id];
-          updateTotal();
+            cart[id] = Math.max(0, (cart[id] || 0) + delta);
+            document.getElementById(`qty-${id}`).innerText = cart[id];
+            updateTotal();
         }
 
         function updateTotal() {
-          let total = 0;
-          Object.keys(cart).forEach(id => {
-            const prod = products.find(p => p.id == id);
-            if (prod) total += cart[id] * prod.price;
-          });
-          document.getElementById("cart-total").innerText = `${total.toFixed(2)} €`;
-          return total;
-        }
-
-        function selectPayment(method) {
-          selectedPaymentMethod = method;
-          document.getElementById("opt-bizum").classList.toggle("active", method === "Bizum");
-          document.getElementById("opt-tienda").classList.toggle("active", method === "En tienda");
-        }
-
-        function resetCart() {
-          cart = {};
-          products.forEach(p => {
-            const qtyElem = document.getElementById(`qty-${p.id}`);
-            if (qtyElem) qtyElem.innerText = "0";
-          });
-          const notesElem = document.getElementById("cust-notes");
-          if (notesElem) notesElem.value = "";
-          updateTotal();
+            let total = 0;
+            for (let id in cart) {
+                const prod = products.find(p => p.id == id);
+                if (prod) total += cart[id] * prod.price;
+            }
+            document.getElementById("cart-total").innerText = total.toFixed(2) + " €";
+            return total;
         }
 
         function closeModal() {
-          document.getElementById("ticket-modal").style.display = "none";
-          resetCart();
-        }
-
-        function validSpanishMobile(rawPhone) {
-          const digits = rawPhone.replace(/\D/g, "");
-          return /^[679]\d{8}$/.test(digits);
-        }
-
-        function getDailyOrderNumber() {
-          const todayKey = "lolin_count_" + formatDateYMD(new Date());
-          let count = parseInt(localStorage.getItem(todayKey) || "0", 10) + 1;
-          localStorage.setItem(todayKey, count);
-          return "#" + String(count).padStart(2, "0");
+            document.getElementById("ticket-modal").style.display = "none";
         }
 
         function confirmOrder() {
-          const name = document.getElementById("cust-name").value.trim();
-          const rawPhone = document.getElementById("cust-phone").value.trim();
-          const phone = rawPhone.replace(/\D/g, "");
-          const date = document.getElementById("cust-date").value;
-          const time = document.getElementById("cust-time").value;
-          const notes = document.getElementById("cust-notes").value.trim();
-          const total = updateTotal();
+            const name = document.getElementById("cust-name").value.trim();
+            const phone = document.getElementById("cust-phone").value.replace(/\D/g, "");
+            const date = document.getElementById("cust-date").value;
+            const time = document.getElementById("cust-time").value;
+            const notes = document.getElementById("cust-notes").value.trim() || "Sin observaciones";
+            const address = document.getElementById("cust-address").value.trim();
+            const deliveryNotes = document.getElementById("cust-delivery-notes").value.trim();
+            const total = updateTotal();
 
-          if (total === 0) {
-            alert("⚠️ Añade al menos un plato con el botón (+).");
-            return;
-          }
-          if (!name || name.length < 2) {
-            alert("⚠️ Introduce tu nombre.");
-            return;
-          }
-          if (!validSpanishMobile(rawPhone)) {
-            alert("⚠️ Introduce un número de móvil válido en España (9 dígitos).");
-            return;
-          }
-          if (!date) {
-            alert("⚠️ Selecciona un día de recogida.");
-            return;
-          }
-          if (!time) {
-            alert("⚠️ Por favor, selecciona una hora válida de recogida.");
-            return;
-          }
-
-          const dateParts = date.split("-");
-          const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-          const ticketId = getDailyOrderNumber();
-
-          document.getElementById("modal-ticket").innerText = ticketId;
-          document.getElementById("modal-summary").innerText = `Recogida: ${formattedDate} (${time} h) · ${total.toFixed(2)} €`;
-
-          let itemsArray = [];
-          let itemsTextWhatsApp = "";
-          Object.keys(cart).forEach(id => {
-            if (cart[id] > 0) {
-              const prod = products.find(p => p.id == id);
-              if (!prod) return;
-              itemsArray.push(`${cart[id]}x ${prod.name}`);
-              itemsTextWhatsApp += `• ${cart[id]}x ${prod.name}\n`;
+            if (total === 0) {
+                alert("⚠️ Selecciona al menos un plato de la carta.");
+                return;
             }
-          });
+            if (!name || name.length < 2) {
+                alert("⚠️ Introduce tu nombre.");
+                return;
+            }
+            if (!/^[679]\d{8}$/.test(phone)) {
+                alert("⚠️ Introduce un número móvil español válido (9 dígitos).");
+                return;
+            }
+            if (!date || !time) {
+                alert("⚠️ Selecciona una fecha y hora disponibles.");
+                return;
+            }
+            if (serviceMode === "delivery" && address.length < 5) {
+                alert("⚠️ Por favor, introduce la dirección completa para el reparto.");
+                return;
+            }
 
-          const payBox = document.getElementById("payment-details-box");
-          if (selectedPaymentMethod === "Bizum") {
-            payBox.className = "payment-box bizum-box";
-            payBox.innerHTML = `
-              <strong>📲 Deja tu pedido pagado por Bizum:</strong><br>
-              1. Envía <strong>${total.toFixed(2)} €</strong> al móvil: <strong>646 24 92 26</strong><br>
-              2. Concepto obligatorio: <strong>Pedido ${ticketId}</strong>
-            `;
-          } else {
-            payBox.className = "payment-box store-pay-box";
-            payBox.innerHTML = `
-              <strong>🏪 Pago en tienda:</strong><br>
-              Pagarás <strong>${total.toFixed(2)} €</strong> en caja al recoger con tu ticket <strong>${ticketId}</strong>.
-            `;
-          }
+            const dateParts = date.split("-");
+            const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+            const ticketId = "#" + Math.floor(10 + Math.random() * 90);
 
-          const orderData = {
-            ticketId: ticketId,
-            name: name,
-            phone: phone,
-            pickupDate: formattedDate,
-            time: time,
-            paymentMethod: selectedPaymentMethod,
-            items: itemsArray.join(", "),
-            total: `${total.toFixed(2)} €`,
-            notes: notes || "Sin observaciones",
-            status: selectedPaymentMethod === "Bizum" ? "Pendiente Bizum" : "Pago en tienda"
-          };
+            let itemsList = [];
+            let itemsTextWhatsApp = "";
+            for (let id in cart) {
+                if (cart[id] > 0) {
+                    const prod = products.find(p => p.id == id);
+                    itemsList.push(`${cart[id]}x ${prod.name}`);
+                    itemsTextWhatsApp += `• ${cart[id]}x ${prod.name}\n`;
+                }
+            }
 
-          fetch(GOOGLE_SHEETS_URL, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(orderData)
-          }).catch(err => console.log("Guardado en hoja:", err));
+            document.getElementById("modal-ticket").innerText = ticketId;
+            document.getElementById("modal-summary").innerText = `${serviceMode === 'delivery' ? '🛵 A Domicilio' : '🏪 En Tienda'} · ${formattedDate} (${time} h) · ${total.toFixed(2)} €`;
 
-          let rawMsg =
-            `🍗 *NUEVO PEDIDO ${ticketId}*\n\n` +
-            `*Cliente:* ${name}\n` +
-            `*Teléfono:* ${phone}\n` +
-            `*Día recogida:* ${formattedDate}\n` +
-            `*Hora recogida:* ${time} h\n` +
-            `*Forma de pago:* ${selectedPaymentMethod}\n\n` +
-            `*Platos:*\n${itemsTextWhatsApp}`;
+            if (serviceMode === 'delivery') {
+                document.getElementById("modal-address-info").innerText = `Dirección: ${address} ${deliveryNotes ? '(' + deliveryNotes + ')' : ''}`;
+            } else {
+                document.getElementById("modal-address-info").innerText = "Recogida rápida en el mostrador del local.";
+            }
 
-          if (notes) {
-            rawMsg += `\n*Nota del cliente:* _${notes}_\n`;
-          }
+            const payBox = document.getElementById("payment-details-box");
+            if (paymentMethod === "Bizum") {
+                payBox.className = "payment-box bizum-box";
+                payBox.innerHTML = `
+                    <strong>📲 Instrucciones de Bizum:</strong><br>
+                    Envía <strong>${total.toFixed(2)} €</strong> al <strong>${STORE_PHONE.slice(2)}</strong>.<br>
+                    Concepto obligatorio: <strong>Pedido ${ticketId}</strong>
+                `;
+            } else {
+                payBox.className = "payment-box store-pay-box";
+                payBox.innerHTML = `
+                    <strong>💵 Pago al recibir:</strong><br>
+                    Abonarás <strong>${total.toFixed(2)} €</strong> en efectivo o con tarjeta.
+                `;
+            }
 
-          rawMsg += `\n*Total a pagar:* ${total.toFixed(2)} €\n\n` +
-                    `_Por favor, confirmadme disponibilidad cuando podáis. ¡Muchas gracias!_`;
+            const orderPayload = {
+                ticketId: ticketId,
+                name: name,
+                phone: phone,
+                pickupDate: formattedDate,
+                time: time,
+                serviceMode: serviceMode === 'delivery' ? `Domicilio (${address})` : 'Recoger en Tienda',
+                paymentMethod: paymentMethod,
+                items: itemsList.join(", "),
+                notes: notes,
+                total: total.toFixed(2) + " €",
+                status: paymentMethod === 'Bizum' ? 'Pendiente Bizum' : 'Pago en tienda'
+            };
 
-          const whatsappUrl = `https://api.whatsapp.com/send?phone=${STORE_PHONE}&text=${encodeURIComponent(rawMsg)}`;
-          document.getElementById("whatsapp-direct-link").setAttribute("href", whatsappUrl);
+            fetch(GOOGLE_SHEETS_URL, {
+                method: "POST",
+                mode: "no-cors",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(orderPayload)
+            }).catch(e => console.log("Hoja Sheets:", e));
 
-          document.getElementById("ticket-modal").style.display = "flex";
+            let deliveryText = serviceMode === 'delivery' ? `🛵 *Tipo:* A DOMICILIO\n📍 *Dirección:* ${address}\n` : `🏪 *Tipo:* RECOGIDA EN TIENDA\n`;
+            if (serviceMode === 'delivery' && deliveryNotes) deliveryText += `ℹ️ *Nota entrega:* ${deliveryNotes}\n`;
+
+            const rawWhatsApp = 
+                `🍗 *NUEVO PEDIDO ${ticketId}*\n\n` +
+                `*Cliente:* ${name}\n` +
+                `*Teléfono:* ${phone}\n` +
+                deliveryText +
+                `*Día:* ${formattedDate}\n` +
+                `*Hora:* ${time} h\n` +
+                `*Pago:* ${paymentMethod}\n` +
+                `*Notas:* ${notes}\n\n` +
+                `*Platos:*\n${itemsTextWhatsApp}\n` +
+                `*Total a pagar:* ${total.toFixed(2)} €\n\n` +
+                `⚠️ *AVISO CANCELACIÓN:* Cualquier anulación se debe realizar exclusivamente llamando al teléfono 646 24 92 26 con un mínimo de 45 minutos de antelación.`;
+
+            const cleanUrl = `https://api.whatsapp.com/send?phone=${STORE_PHONE}&text=${encodeURIComponent(rawWhatsApp)}`;
+            document.getElementById("whatsapp-direct-link").setAttribute("href", cleanUrl);
+
+            document.getElementById("ticket-modal").style.display = "flex";
         }
 
         renderProducts();
-        initRollingWeekDatePicker();
+        initDatePicker();
     </script>
 </body>
 </html>
