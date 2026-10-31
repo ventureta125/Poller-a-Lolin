@@ -31,7 +31,6 @@
         header p { font-size: 0.9rem; color: #94a3b8; }
 
         .container { max-width: 600px; margin: 0 auto; padding: 16px; }
-
         .section-title { font-size: 1.1rem; font-weight: 700; margin: 20px 0 12px; color: #0f172a; }
 
         .product-card {
@@ -74,7 +73,7 @@
         }
         .input-group { margin-bottom: 14px; }
         .input-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
-        .input-group input, .input-group select, .input-group textarea {
+        .input-group input, .input-group select {
             width: 100%;
             padding: 10px;
             border: 1px solid var(--border);
@@ -95,7 +94,7 @@
             border-radius: 8px;
             background: #f8fafc;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -105,13 +104,14 @@
             color: var(--primary-dark);
         }
 
-        #delivery-fields {
+        #delivery-fields, #hand-pay-suboptions {
             display: none;
             background: #fff7ed;
             border: 1px dashed var(--primary);
             padding: 12px;
             border-radius: 8px;
             margin-top: 8px;
+            margin-bottom: 12px;
         }
 
         .policy-banner {
@@ -127,9 +127,7 @@
 
         .cart-bar {
             position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
+            bottom: 0; left: 0; right: 0;
             background: white;
             border-top: 1px solid var(--border);
             padding: 12px 16px;
@@ -152,8 +150,11 @@
             cursor: pointer;
             font-size: 1rem;
         }
+        .btn-checkout:disabled {
+            background: #94a3b8;
+            cursor: wait;
+        }
 
-        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -275,7 +276,7 @@
 
             <div class="input-group" style="margin-top: 12px;">
                 <label>Tu Nombre y Apellidos:</label>
-                <input type="text" id="cust-name" placeholder="Ej: Carlos Gómez" required>
+                <input type="text" id="cust-name" placeholder="Ej: Pedro Ventura" required>
             </div>
 
             <div class="input-group">
@@ -294,11 +295,21 @@
                 </div>
             </div>
 
+            <!-- Selector de Pago correlativo con la modalidad -->
             <div class="input-group">
                 <label>Forma de Pago:</label>
                 <div class="option-grid">
-                    <div class="btn-toggle active" id="btn-pay-bizum" onclick="setPaymentMethod('Bizum')">📲 Pagar con Bizum</div>
-                    <div class="btn-toggle" id="btn-pay-store" onclick="setPaymentMethod('En tienda')">💵 Al recibir / Tienda</div>
+                    <div class="btn-toggle active" id="btn-pay-bizum" onclick="setPaymentCategory('bizum')">📲 Pagar por Bizum</div>
+                    <div class="btn-toggle" id="btn-pay-inperson" onclick="setPaymentCategory('inperson')">🏪 Pagar en tienda</div>
+                </div>
+            </div>
+
+            <!-- Sub-selector Efectivo o Tarjeta cuando no es Bizum -->
+            <div id="hand-pay-suboptions">
+                <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:6px;" id="hand-pay-label">¿Cómo prefieres abonar en tienda?</label>
+                <div class="option-grid">
+                    <div class="btn-toggle active" id="btn-sub-card" onclick="setSubPayment('Tarjeta')">💳 Con Tarjeta</div>
+                    <div class="btn-toggle" id="btn-sub-cash" onclick="setSubPayment('Efectivo')">💵 En Efectivo</div>
                 </div>
             </div>
 
@@ -318,14 +329,14 @@
             <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">TOTAL ESTIMADO:</div>
             <div class="cart-total" id="cart-total">0,00 €</div>
         </div>
-        <button class="btn-checkout" onclick="confirmOrder()">Tramitar Pedido</button>
+        <button class="btn-checkout" id="btn-submit-order" onclick="confirmOrder()">Tramitar Pedido</button>
     </div>
 
     <!-- Modal Resumen -->
     <div class="modal" id="ticket-modal">
         <div class="modal-card">
-            <h2>¡Pedido Preparado!</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Tu comanda ha quedado registrada con el código:</p>
+            <h2>¡Pedido Registrado!</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 4px;">Tu número de pedido oficial para ese día es:</p>
             
             <div class="ticket-badge" id="modal-ticket">#01</div>
             
@@ -360,11 +371,12 @@
 
         const ALL_HOURS = ["12:00", "12:30", "13:00", "13:30", "14:00", "14:30", "15:00", "15:30"];
         let cart = {};
-        let serviceMode = "pickup";
-        let paymentMethod = "Bizum";
+        let serviceMode = "pickup"; // 'pickup' o 'delivery'
+        let paymentCategory = "bizum"; // 'bizum' o 'inperson'
+        let subPayment = "Tarjeta"; // 'Tarjeta' o 'Efectivo'
 
-        // URL actualizada de Google Apps Script
-        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbz3IFZcBQ5tY9sKbCvaGATbiSyVvzgVk7_PFnaJvQUshmB4vUdl6K8Qy03hUNNsyOvH/exec";
+        // Nueva URL actualizada de Google Apps Script
+        const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbw8KGxg601_YclVpWVX4CsZpWKpCkbFTsW-ppnKwVpCD2QMp-5Rj79-QiH23GhZeP9i/exec";
         const STORE_PHONE = "34646249226";
 
         function setServiceMode(mode) {
@@ -372,13 +384,40 @@
             document.getElementById("btn-mode-pickup").classList.toggle("active", mode === 'pickup');
             document.getElementById("btn-mode-delivery").classList.toggle("active", mode === 'delivery');
             document.getElementById("delivery-fields").style.display = mode === 'delivery' ? 'block' : 'none';
+
+            const inPersonBtn = document.getElementById("btn-pay-inperson");
+            const handPayLabel = document.getElementById("hand-pay-label");
+            if (mode === 'delivery') {
+                inPersonBtn.innerText = "🛵 Al entregar en domicilio";
+                handPayLabel.innerText = "¿Cómo pagarás al repartidor en tu domicilio?";
+            } else {
+                inPersonBtn.innerText = "🏪 Pagar en tienda";
+                handPayLabel.innerText = "¿Cómo prefieres abonar al recoger en tienda?";
+            }
             updateTotal();
         }
 
-        function setPaymentMethod(method) {
-            paymentMethod = method;
-            document.getElementById("btn-pay-bizum").classList.toggle("active", method === 'Bizum');
-            document.getElementById("btn-pay-store").classList.toggle("active", method === 'En tienda');
+        function setPaymentCategory(cat) {
+            paymentCategory = cat;
+            document.getElementById("btn-pay-bizum").classList.toggle("active", cat === 'bizum');
+            document.getElementById("btn-pay-inperson").classList.toggle("active", cat === 'inperson');
+            document.getElementById("hand-pay-suboptions").style.display = cat === 'inperson' ? 'block' : 'none';
+        }
+
+        function setSubPayment(type) {
+            subPayment = type;
+            document.getElementById("btn-sub-card").classList.toggle("active", type === 'Tarjeta');
+            document.getElementById("btn-sub-cash").classList.toggle("active", type === 'Efectivo');
+        }
+
+        function getFinalPaymentText() {
+            if (paymentCategory === "bizum") {
+                return "Bizum";
+            }
+            if (serviceMode === "delivery") {
+                return `En domicilio (${subPayment})`;
+            }
+            return `En tienda (${subPayment})`;
         }
 
         function initDatePicker() {
@@ -421,7 +460,7 @@
             }
 
             if (available.length === 0) {
-                selectTime.innerHTML = `<option value="">No hay horas hoy</option>`;
+                selectTime.innerHTML = `<option value="">Sin horas hoy (elige otro día)</option>`;
             } else {
                 available.forEach(h => {
                     const opt = document.createElement("option");
@@ -470,7 +509,7 @@
             document.getElementById("ticket-modal").style.display = "none";
         }
 
-        function confirmOrder() {
+        async function confirmOrder() {
             const name = document.getElementById("cust-name").value.trim();
             const phone = document.getElementById("cust-phone").value.replace(/\D/g, "");
             const date = document.getElementById("cust-date").value;
@@ -501,9 +540,13 @@
                 return;
             }
 
+            const btnSubmit = document.getElementById("btn-submit-order");
+            btnSubmit.disabled = true;
+            btnSubmit.innerText = "Asignando nº pedido...";
+
             const dateParts = date.split("-");
             const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
-            const ticketId = "#" + Math.floor(10 + Math.random() * 90);
+            const finalPaymentMethod = getFinalPaymentText();
 
             let itemsList = [];
             let itemsTextWhatsApp = "";
@@ -515,63 +558,89 @@
                 }
             }
 
-            document.getElementById("modal-ticket").innerText = ticketId;
-            document.getElementById("modal-summary").innerText = `${serviceMode === 'delivery' ? '🛵 A Domicilio' : '🏪 En Tienda'} · ${formattedDate} (${time} h) · ${total.toFixed(2)} €`;
-
-            if (serviceMode === 'delivery') {
-                document.getElementById("modal-address-info").innerText = `Dirección: ${address} ${deliveryNotes ? '(' + deliveryNotes + ')' : ''}`;
-            } else {
-                document.getElementById("modal-address-info").innerText = "Recogida rápida en el mostrador del local.";
-            }
-
-            const payBox = document.getElementById("payment-details-box");
-            if (paymentMethod === "Bizum") {
-                payBox.className = "payment-box bizum-box";
-                payBox.innerHTML = `
-                    <strong>📲 Instrucciones de Bizum:</strong><br>
-                    Envía <strong>${total.toFixed(2)} €</strong> al <strong>${STORE_PHONE.slice(2)}</strong>.<br>
-                    Concepto obligatorio: <strong>Pedido ${ticketId}</strong>
-                `;
-            } else {
-                payBox.className = "payment-box store-pay-box";
-                payBox.innerHTML = `
-                    <strong>💵 Pago al recibir:</strong><br>
-                    Abonarás <strong>${total.toFixed(2)} €</strong> en efectivo o con tarjeta.
-                `;
-            }
+            const serviceDesc = serviceMode === 'delivery'
+                ? `A DOMICILIO: ${address}${deliveryNotes ? ' (' + deliveryNotes + ')' : ''}`
+                : 'RECOGER EN TIENDA';
 
             const orderPayload = {
-                ticketId: ticketId,
                 name: name,
                 phone: phone,
                 pickupDate: formattedDate,
                 time: time,
-                serviceMode: serviceMode === 'delivery' ? `Domicilio (${address})` : 'Recoger en Tienda',
-                paymentMethod: paymentMethod,
+                serviceMode: serviceMode,
+                address: address,
+                serviceDesc: serviceDesc,
+                paymentMethod: finalPaymentMethod,
                 items: itemsList.join(", "),
                 notes: notes,
                 total: total.toFixed(2) + " €",
-                status: paymentMethod === 'Bizum' ? 'Pendiente Bizum' : 'Pago en tienda'
+                status: paymentCategory === 'bizum' ? 'Pendiente Bizum' : `Cobrar (${subPayment})`
             };
 
-            fetch(GOOGLE_SHEETS_URL, {
-                method: "POST",
-                mode: "no-cors",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(orderPayload)
-            }).catch(e => console.log("Hoja Sheets:", e));
+            let officialTicketId = "#01";
+            try {
+                const response = await fetch(GOOGLE_SHEETS_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(orderPayload)
+                });
+                const resJson = await response.json();
+                if (resJson && resJson.ticketId) {
+                    officialTicketId = resJson.ticketId;
+                }
+            } catch (e) {
+                console.log("Aviso conexión Sheets:", e);
+            }
 
-            let deliveryText = serviceMode === 'delivery' ? `🛵 *Tipo:* A DOMICILIO\n📍 *Dirección:* ${address}\n` : `🏪 *Tipo:* RECOGIDA EN TIENDA\n`;
-            if (serviceMode === 'delivery' && deliveryNotes) deliveryText += `ℹ️ *Nota entrega:* ${deliveryNotes}\n`;
+            btnSubmit.disabled = false;
+            btnSubmit.innerText = "Tramitar Pedido";
+
+            document.getElementById("modal-ticket").innerText = officialTicketId;
+            document.getElementById("modal-summary").innerText = `${serviceMode === 'delivery' ? '🛵 A Domicilio' : '🏪 Recoger en Tienda'} · ${formattedDate} (${time} h) · ${total.toFixed(2)} €`;
+
+            if (serviceMode === 'delivery') {
+                document.getElementById("modal-address-info").innerText = `📍 Entrega en: ${address} ${deliveryNotes ? '(' + deliveryNotes + ')' : ''}`;
+            } else {
+                document.getElementById("modal-address-info").innerText = "🏪 Recogida en el mostrador del local.";
+            }
+
+            const payBox = document.getElementById("payment-details-box");
+            if (paymentCategory === "bizum") {
+                payBox.className = "payment-box bizum-box";
+                payBox.innerHTML = `
+                    <strong>📲 Instrucciones de Bizum:</strong><br>
+                    Envía <strong>${total.toFixed(2)} €</strong> al <strong>${STORE_PHONE.slice(2)}</strong>.<br>
+                    Concepto obligatorio: <strong>Pedido ${officialTicketId}</strong>
+                `;
+            } else if (serviceMode === "delivery") {
+                payBox.className = "payment-box store-pay-box";
+                payBox.innerHTML = `
+                    <strong>🛵 Pago al repartidor en domicilio:</strong><br>
+                    Abonarás <strong>${total.toFixed(2)} €</strong> mediante <strong>${subPayment}</strong> al recibir tu pedido en casa.
+                `;
+            } else {
+                payBox.className = "payment-box store-pay-box";
+                payBox.innerHTML = `
+                    <strong>🏪 Pago en tienda:</strong><br>
+                    Abonarás <strong>${total.toFixed(2)} €</strong> mediante <strong>${subPayment}</strong> al recoger en el local.
+                `;
+            }
+
+            let deliveryText = serviceMode === 'delivery'
+                ? `🛵 *Tipo:* A DOMICILIO\n📍 *Dirección:* ${address}\n`
+                : `🏪 *Tipo:* RECOGIDA EN TIENDA\n`;
+            if (serviceMode === 'delivery' && deliveryNotes) {
+                deliveryText += `ℹ️ *Indicaciones:* ${deliveryNotes}\n`;
+            }
 
             const rawWhatsApp = 
-                `🍗 *NUEVO PEDIDO ${ticketId}*\n\n` +
+                `🍗 *NUEVO PEDIDO ${officialTicketId}*\n\n` +
                 `*Cliente:* ${name}\n` +
                 `*Teléfono:* ${phone}\n` +
                 deliveryText +
                 `*Día:* ${formattedDate}\n` +
                 `*Hora:* ${time} h\n` +
-                `*Pago:* ${paymentMethod}\n` +
+                `*Pago:* ${finalPaymentMethod}\n` +
                 `*Notas:* ${notes}\n\n` +
                 `*Platos:*\n${itemsTextWhatsApp}\n` +
                 `*Total a pagar:* ${total.toFixed(2)} €\n\n` +
